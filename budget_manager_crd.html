@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Presupuestaria - Cruz Roja Dominicana</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary-red: #DC143C;
+            --secondary-red: #B91C3C;
+            --dark-red: #9F1239;
+            --light-red: #FEE2E2;
+            --accent-red: #EF4444;
+            --neutral-50: #F8FAFC;
+            --neutral-100: #F1F5F9;
+            --neutral-200: #E2E8F0;
+            --neutral-300: #CBD5E1;
+            --neutral-400: #94A3B8;
+            --neutral-500: #64748B;
+            --neutral-600: #475569;
+            --neutral-700: #334155;
+            --neutral-800: #1E293B;
+            --neutral-900: #0F172A;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--neutral-100) 0%, var(--neutral-50) 100%);
+            min-height: 100vh;
+            color: var(--neutral-800);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--secondary-red) 100%);
+            color: white;
+            padding: 48px 40px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
+        }
+
+        .header .subtitle {
+            font-size: 1.25rem;
+            font-weight: 500;
+            opacity: 0.95;
+            margin-bottom: 4px;
+        }
+
+        .header .location {
+            font-size: 1.125rem;
+            font-weight: 400;
+            opacity: 0.85;
+            margin-bottom: 24px;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 16px;
+            display: inline-block;
+        }
+
+        .admin-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            opacity: 0.8;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .admin-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        /* Controls Section */
+        .controls {
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 32px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .currency-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .currency-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--neutral-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .currency-toggle {
+            position: relative;
+            width: 72px;
+            height: 36px;
+            background: var(--neutral-200);
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid var(--neutral-300);
+        }
+
+        .currency-toggle.active {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        .currency-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-md);
+        }
+
+        .currency-toggle.active .currency-slider {
+            transform: translateX(36px);
+        }
+
+        .currency-text {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--neutral-700);
+        }
+
+        /* Expense Form */
+        .expense-form {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--neutral-700);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-select,
+        .form-input {
+            padding: 12px 16px;
+            border: 2px solid var(--neutral-200);
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: var(--neutral-50);
+            transition: all 0.2s ease;
+            color: var(--neutral-800);
+        }
+
+        .form-select:focus,
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.1);
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary-red), var(--secondary-red));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--secondary-red), var(--dark-red));
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 32px 28px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--neutral-200);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-red), var(--secondary-red));
+        }
+
+        .summary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .summary-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--neutral-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-red);
+        }
+
+        .summary-value {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--neutral-900);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .summary-value.positive {
+            color: var(--success);
+        }
+
+        .summary-value.negative {
+            color: var(--danger);
+        }
+
+        .summary-value.warning {
+            color: var(--warning);
+        }
+
+        /* Budget Table */
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .budget-table th {
+            background: linear-gradient(135deg, var(--neutral-800), var(--neutral-700));
+            color: white;
+            padding: 20px 16px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-bottom: 1px solid var(--neutral-600);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .budget-table td {
+            padding: 20px 16px;
+            border-bottom: 1px solid var(--neutral-200);
+            font-size: 0.875rem;
+            vertical-align: top;
+        }
+
+        .budget-table tr:hover {
+            background: var(--neutral-50);
+        }
+
+        .category-row {
+            background: linear-gradient(135deg, var(--primary-red), var(--secondary-red));
+            color: white;
+            font-weight: 700;
+        }
+
+        .category-row:hover {
+            background: linear-gradient(135deg, var(--secondary-red), var(--dark-red));
+        }
+
+        .category-row td {
+            padding: 16px;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .item-code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-weight: 700;
+            color: var(--primary-red);
+            background: var(--light-red);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .amount {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-weight: 600;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .remaining {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-weight: 700;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .remaining.positive {
+            color: var(--success);
+        }
+
+        .remaining.negative {
+            color: var(--danger);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            min-width: 120px;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--neutral-600);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--neutral-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #34D399);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+
+        .progress-fill.warning {
+            background: linear-gradient(90deg, var(--warning), #FBBF24);
+        }
+
+        .progress-fill.danger {
+            background: linear-gradient(90deg, var(--danger), #F87171);
+        }
+
+        /* Expenses List */
+        .expenses-container {
+            max-width: 320px;
+        }
+
+        .expenses-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .expenses-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .expenses-list::-webkit-scrollbar-track {
+            background: var(--neutral-200);
+            border-radius: 2px;
+        }
+
+        .expenses-list::-webkit-scrollbar-thumb {
+            background: var(--neutral-400);
+            border-radius: 2px;
+        }
+
+        .expense-item {
+            background: white;
+            padding: 12px;
+            margin: 6px 0;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-red);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .expense-item:hover {
+            box-shadow: var(--shadow);
+            transform: translateX(2px);
+        }
+
+        .expense-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .expense-description {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--neutral-800);
+            margin-bottom: 4px;
+            word-wrap: break-word;
+        }
+
+        .expense-date {
+            font-size: 0.625rem;
+            color: var(--neutral-500);
+            font-weight: 500;
+        }
+
+        .expense-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            margin-left: 12px;
+        }
+
+        .expense-amount {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 6px;
+            cursor: pointer;
+            font-size: 0.625rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-delete:hover {
+            background: #DC2626;
+            transform: scale(1.05);
+        }
+
+        .no-expenses {
+            text-align: center;
+            color: var(--neutral-400);
+            font-style: italic;
+            font-size: 0.75rem;
+            padding: 16px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            margin-top: 32px;
+            border: 1px solid var(--neutral-200);
+            color: var(--neutral-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .expense-form {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            
+            .expense-form .form-group:nth-child(3),
+            .expense-form .btn-primary {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .header {
+                padding: 32px 24px;
+                margin-bottom: 24px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                padding: 24px;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .expense-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .expense-form .form-group,
+            .expense-form .btn-primary {
+                grid-column: span 1;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .budget-table th,
+            .budget-table td {
+                padding: 12px 8px;
+                font-size: 0.75rem;
+            }
+            
+            .expenses-container {
+                max-width: 240px;
+            }
+        }
+
+        /* Animation */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .expense-item {
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>Sistema de Gestión Presupuestaria</h1>
+                <div class="subtitle">Gestión Integrada de la Salud Materno-Infantil</div>
+                <div class="location">Santo Domingo, República Dominicana</div>
+                <div class="admin-card">
+                    <div class="admin-label">Administradora del Proyecto</div>
+                    <div class="admin-name">Mayra Caro</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Controls -->
+        <section class="controls">
+            <div class="controls-grid">
+                <div class="currency-section">
+                    <span class="currency-label">Moneda</span>
+                    <span class="currency-text">EUR</span>
+                    <div class="currency-toggle" id="currencyToggle">
+                        <div class="currency-slider"></div>
+                    </div>
+                    <span class="currency-text">DOP</span>
+                </div>
+                
+                <div class="expense-form">
+                    <div class="form-group">
+                        <label class="form-label">Partida Presupuestaria</label>
+                        <select class="form-select" id="budgetItem">
+                            <option value="">Seleccionar partida...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Concepto del Gasto</label>
+                        <input type="text" class="form-input" id="expenseDescription" placeholder="Descripción detallada del gasto">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Monto</label>
+                        <input type="number" class="form-input" id="expenseAmount" placeholder="0.00" step="0.01">
+                    </div>
+                    <button class="btn-primary" onclick="addExpense()">Registrar Gasto</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary Cards -->
+        <section class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-header">
+                    <span class="summary-title">Presupuesto Total</span>
+                    <div class="summary-icon"></div>
+                </div>
+                <div class="summary-value" id="totalBudget">€36,646.91</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-header">
+                    <span class="summary-title">Total Ejecutado</span>
+                    <div class="summary-icon"></div>
+                </div>
+                <div class="summary-value" id="totalSpent">€0.00</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-header">
+                    <span class="summary-title">Saldo Disponible</span>
+                    <div class="summary-icon"></div>
+                </div>
+                <div class="summary-value positive" id="remainingBudget">€36,646.91</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-header">
+                    <span class="summary-title">Porcentaje Ejecutado</span>
+                    <div class="summary-icon"></div>
+                </div>
+                <div class="summary-value" id="executionPercentage">0.0%</div>
+            </div>
+        </section>
+
+        <!-- Budget Table -->
+        <section class="table-container">
+            <div class="table-wrapper">
+                <table class="budget-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción de la Partida</th>
+                            <th>Presupuesto Asignado</th>
+                            <th>Monto Ejecutado</th>
+                            <th>Saldo Disponible</th>
+                            <th>Progreso</th>
+                            <th>Registro de Gastos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="budgetTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Desarrollado por Jesús | Cruz Roja Dominicana | Sistema de Gestión Presupuestaria 2025</p>
+        </footer>
+    </div>
+
+    <script>
+        // Configuración
+        const EXCHANGE_RATE = 65.30;
+        let isEURO = true;
+
+        // Datos del presupuesto
+        const budgetData = {
+            categories: {
+                '1': {
+                    name: 'RECURSOS HUMANOS',
+                    total: 19847.36,
+                    items: {
+                        '1.1': { name: 'Personal local: Coordinador médico', budget: 8152.00 },
+                        '1.2': { name: 'Personal local: Coordinador de campo CRD', budget: 3057.52 },
+                        '1.3': { name: 'Personal local: Cargas sociales y previdenciales', budget: 2307.84 },
+                        '1.4': { name: 'Personal expatriado: Coordinador de campo CRI', budget: 6000.00 },
+                        '1.5': { name: 'Teléfono para coordinación general del proyecto', budget: 330.00 }
+                    }
+                },
+                '2': {
+                    name: 'ASISTENCIA DIRECTA',
+                    total: 9140.50,
+                    items: {
+                        '2.2': { name: 'Kits de higiene materno-infantiles', budget: 8750.00 },
+                        '2.3': { name: 'Combustible para visitas domiciliarias y monitoreo', budget: 390.50 }
+                    }
+                },
+                '3': {
+                    name: 'INFORMACIÓN Y SENSIBILIZACIÓN',
+                    total: 6310.00,
+                    items: {
+                        '3.1': { name: 'Diálogos comunitarios: Coffee break para participantes', budget: 360.00 },
+                        '3.2': { name: 'Comunicación pública: Mensajes SMS', budget: 1600.00 },
+                        '3.3': { name: 'Comunicación pública: Materiales impresos (dípticos)', budget: 3750.00 },
+                        '3.4': { name: 'Visibilidad: Camisetas y chalecos para voluntarios', budget: 600.00 }
+                    }
+                },
+                '4': {
+                    name: 'COSTOS INDIRECTOS CRI',
+                    total: 1349.05,
+                    items: {
+                        '4.1': { name: 'Gastos generales (menos del 5% del financiamiento)', budget: 1349.05 }
+                    }
+                }
+            }
+        };
+
+        // Estado de la aplicación
+        let expenses = JSON.parse(localStorage.getItem('budgetExpenses') || '{}');
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            populateBudgetSelect();
+            renderBudgetTable();
+            updateSummary();
+            setupCurrencyToggle();
+        }
+
+        function setupCurrencyToggle() {
+            const toggle = document.getElementById('currencyToggle');
+            toggle.addEventListener('click', function() {
+                isEURO = !isEURO;
+                toggle.classList.toggle('active');
+                renderBudgetTable();
+                updateSummary();
+            });
+        }
+
+        function formatCurrency(amount) {
+            if (isEURO) {
+                return `€${amount.toLocaleString('es-ES', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                })}`;
+            } else {
+                const dopAmount = amount * EXCHANGE_RATE;
+                return `$${dopAmount.toLocaleString('es-DO', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                })} DOP`;
+            }
+        }
+
+        function populateBudgetSelect() {
+            const select = document.getElementById('budgetItem');
+            select.innerHTML = '<option value="">Seleccionar partida...</option>';
+            
+            Object.keys(budgetData.categories).forEach(catKey => {
+                const category = budgetData.categories[catKey];
+                
+                Object.keys(category.items).forEach(itemKey => {
+                    const item = category.items[itemKey];
+                    const option = document.createElement('option');
+                    option.value = itemKey;
+                    option.textContent = `${itemKey} - ${item.name}`;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function renderBudgetTable() {
+            const tbody = document.getElementById('budgetTableBody');
+            tbody.innerHTML = '';
+
+            Object.keys(budgetData.categories).forEach(catKey => {
+                const category = budgetData.categories[catKey];
+                
+                // Fila de categoría
+                const categoryRow = document.createElement('tr');
+                categoryRow.className = 'category-row';
+                categoryRow.innerHTML = `
+                    <td colspan="7">${category.name}</td>
+                `;
+                tbody.appendChild(categoryRow);
+
+                // Filas de items
+                Object.keys(category.items).forEach(itemKey => {
+                    const item = category.items[itemKey];
+                    const itemExpenses = expenses[itemKey] || [];
+                    const totalSpent = itemExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+                    const remaining = item.budget - totalSpent;
+                    const percentage = item.budget > 0 ? (totalSpent / item.budget) * 100 : 0;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><span class="item-code">${itemKey}</span></td>
+                        <td>${item.name}</td>
+                        <td class="amount">${formatCurrency(item.budget)}</td>
+                        <td class="amount">${formatCurrency(totalSpent)}</td>
+                        <td class="remaining ${remaining >= 0 ? 'positive' : 'negative'}">${formatCurrency(remaining)}</td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-text">${percentage.toFixed(1)}%</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill ${percentage > 90 ? 'danger' : percentage > 70 ? 'warning' : ''}" 
+                                         style="width: ${Math.min(percentage, 100)}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="expenses-container">
+                                ${renderExpensesList(itemKey, itemExpenses)}
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+        }
+
+        function renderExpensesList(itemKey, itemExpenses) {
+            if (itemExpenses.length === 0) {
+                return '<div class="no-expenses">Sin gastos registrados</div>';
+            }
+
+            const expensesHtml = itemExpenses.map((expense, index) => `
+                <div class="expense-item">
+                    <div class="expense-info">
+                        <div class="expense-description">${expense.description}</div>
+                        <div class="expense-date">${new Date(expense.date).toLocaleDateString('es-ES', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        })}</div>
+                    </div>
+                    <div class="expense-actions">
+                        <div class="expense-amount">${formatCurrency(expense.amount)}</div>
+                        <button class="btn-delete" onclick="deleteExpense('${itemKey}', ${index})" title="Eliminar gasto">
+                            ×
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            return `<div class="expenses-list">${expensesHtml}</div>`;
+        }
+
+        function addExpense() {
+            const itemKey = document.getElementById('budgetItem').value;
+            const description = document.getElementById('expenseDescription').value.trim();
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+
+            // Validaciones
+            if (!itemKey) {
+                alert('Por favor, seleccione una partida presupuestaria.');
+                return;
+            }
+            
+            if (!description) {
+                alert('Por favor, ingrese una descripción del gasto.');
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                alert('Por favor, ingrese un monto válido mayor a cero.');
+                return;
+            }
+
+            // Verificar si el gasto excede el presupuesto disponible
+            const category = findCategoryByItem(itemKey);
+            const item = category.items[itemKey];
+            const currentExpenses = expenses[itemKey] || [];
+            const currentSpent = currentExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+            const remaining = item.budget - currentSpent;
+
+            if (amount > remaining) {
+                const confirmExceed = confirm(
+                    `Este gasto (${formatCurrency(amount)}) excede el saldo disponible (${formatCurrency(remaining)}).\n\n¿Desea continuar de todos modos?`
+                );
+                if (!confirmExceed) {
+                    return;
+                }
+            }
+
+            // Crear el gasto
+            if (!expenses[itemKey]) {
+                expenses[itemKey] = [];
+            }
+
+            const expense = {
+                description: description,
+                amount: amount,
+                date: new Date().toISOString()
+            };
+
+            expenses[itemKey].push(expense);
+            saveExpenses();
+            
+            // Limpiar formulario
+            document.getElementById('budgetItem').value = '';
+            document.getElementById('expenseDescription').value = '';
+            document.getElementById('expenseAmount').value = '';
+            
+            // Actualizar interfaz
+            renderBudgetTable();
+            updateSummary();
+
+            // Mostrar confirmación
+            showNotification('Gasto registrado exitosamente', 'success');
+        }
+
+        function deleteExpense(itemKey, expenseIndex) {
+            if (confirm('¿Está seguro de que desea eliminar este registro de gasto?')) {
+                expenses[itemKey].splice(expenseIndex, 1);
+                
+                if (expenses[itemKey].length === 0) {
+                    delete expenses[itemKey];
+                }
+                
+                saveExpenses();
+                renderBudgetTable();
+                updateSummary();
+                showNotification('Gasto eliminado exitosamente', 'info');
+            }
+        }
+
+        function findCategoryByItem(itemKey) {
+            for (const catKey in budgetData.categories) {
+                const category = budgetData.categories[catKey];
+                if (category.items[itemKey]) {
+                    return category;
+                }
+            }
+            return null;
+        }
+
+        function saveExpenses() {
+            localStorage.setItem('budgetExpenses', JSON.stringify(expenses));
+        }
+
+        function updateSummary() {
+            const totalBudget = 36646.91;
+            let totalSpent = 0;
+
+            // Calcular total gastado
+            Object.keys(expenses).forEach(itemKey => {
+                const itemExpenses = expenses[itemKey] || [];
+                totalSpent += itemExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+            });
+
+            const remaining = totalBudget - totalSpent;
+            const percentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+            // Actualizar valores
+            document.getElementById('totalBudget').textContent = formatCurrency(totalBudget);
+            document.getElementById('totalSpent').textContent = formatCurrency(totalSpent);
+            document.getElementById('remainingBudget').textContent = formatCurrency(remaining);
+            document.getElementById('executionPercentage').textContent = `${percentage.toFixed(1)}%`;
+
+            // Actualizar clases de color para el saldo
+            const remainingElement = document.getElementById('remainingBudget');
+            remainingElement.className = 'summary-value';
+            
+            if (remaining < 0) {
+                remainingElement.classList.add('negative');
+            } else if (remaining < totalBudget * 0.1) {
+                remainingElement.classList.add('warning');
+            } else {
+                remainingElement.classList.add('positive');
+            }
+
+            // Actualizar clase para el porcentaje
+            const percentageElement = document.getElementById('executionPercentage');
+            percentageElement.className = 'summary-value';
+            
+            if (percentage > 90) {
+                percentageElement.classList.add('warning');
+            } else if (percentage > 100) {
+                percentageElement.classList.add('negative');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Crear elemento de notificación
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--primary-red)'};
+                color: white;
+                border-radius: 12px;
+                box-shadow: var(--shadow-lg);
+                z-index: 1000;
+                font-weight: 600;
+                font-size: 0.875rem;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Mostrar notificación
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Ocultar después de 3 segundos
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Event listeners adicionales
+        document.getElementById('expenseAmount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addExpense();
+            }
+        });
+
+        document.getElementById('expenseDescription').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addExpense();
+            }
+        });
+
+        // Validación en tiempo real del monto
+        document.getElementById('expenseAmount').addEventListener('input', function(e) {
+            const value = parseFloat(e.target.value);
+            if (value < 0) {
+                e.target.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
