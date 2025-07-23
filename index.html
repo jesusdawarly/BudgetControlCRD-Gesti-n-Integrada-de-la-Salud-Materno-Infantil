@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión Presupuestaria - Cruz Roja Dominicana</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
@@ -137,7 +140,7 @@
 
         .controls-grid {
             display: grid;
-            grid-template-columns: auto 1fr;
+            grid-template-columns: auto auto 1fr;
             gap: 32px;
             align-items: center;
         }
@@ -257,8 +260,60 @@
             background: linear-gradient(135deg, var(--secondary-red), var(--dark-red));
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
+        .btn-secondary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--neutral-700), var(--neutral-600));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--neutral-600), var(--neutral-500));
+        }
+
+        .btn-success {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .export-section {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .export-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--neutral-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         /* Summary Cards */
@@ -586,6 +641,19 @@
 
         /* Responsive Design */
         @media (max-width: 1200px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .export-section {
+                justify-content: center;
+            }
+
+            .export-section {
+                justify-content: center;
+            }
+            
             .expense-form {
                 grid-template-columns: 1fr 1fr;
                 gap: 16px;
@@ -669,7 +737,7 @@
             <div class="header-content">
                 <h1>SISTEMA DE GESTIÓN PRESUPUESTARIA - CRD</h1>
                 <div class="subtitle">Gestión Integrada de la Salud Materno-Infantil</div>
-                <div class="location">Santo Domingo</div>
+                <div class="location">Santo Domingo, República Dominicana</div>
                 <div class="admin-card">
                     <div class="admin-label">Administradora del Proyecto</div>
                     <div class="admin-name">Mayra Altagracia Caro</div>
@@ -687,6 +755,27 @@
                         <div class="currency-slider"></div>
                     </div>
                     <span class="currency-text">DOP</span>
+                </div>
+
+                <div class="export-section">
+                    <span class="export-label">Exportar</span>
+                    <button class="btn-success" onclick="exportToExcel()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
+                            <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Excel
+                    </button>
+                    <button class="btn-secondary" onclick="exportToPDF()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
+                            <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        PDF
+                    </button>
                 </div>
                 
                 <div class="expense-form">
@@ -764,8 +853,8 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>Software presupuestario hecho por Jesus Dawarly Ramirez</p>
-            <p>Powered by DGP · Dawarly Gestion Presupuestaria Consulting</p>
+           <p>Software presupuestario hecho por Jesus Dawarly Ramirez</p>
+            <p>POWERED BY DGP · Dawarly Gestion Presupuestaria Consulting</p>
         </footer>
     </div>
 
@@ -1141,6 +1230,299 @@
                 e.target.value = '';
             }
         });
+
+        // Funciones de exportación
+        function exportToExcel() {
+            try {
+                const workbook = XLSX.utils.book_new();
+                
+                // Hoja 1: Resumen del Proyecto
+                const summaryData = [
+                    ['SISTEMA DE GESTIÓN PRESUPUESTARIA'],
+                    ['Cruz Roja Dominicana'],
+                    ['Gestión Integrada de la Salud Materno-Infantil'],
+                    ['Santo Domingo, República Dominicana'],
+                    [''],
+                    ['Administradora del Proyecto:', 'Mayra Caro'],
+                    ['Fecha de Exportación:', new Date().toLocaleDateString('es-ES')],
+                    ['Moneda:', isEURO ? 'EUR' : 'DOP'],
+                    [''],
+                    ['RESUMEN FINANCIERO'],
+                    ['Presupuesto Total:', formatCurrencyForExport(36646.91)],
+                    ['Total Ejecutado:', formatCurrencyForExport(calculateTotalSpent())],
+                    ['Saldo Disponible:', formatCurrencyForExport(36646.91 - calculateTotalSpent())],
+                    ['Porcentaje Ejecutado:', `${((calculateTotalSpent() / 36646.91) * 100).toFixed(1)}%`],
+                ];
+
+                const summaryWS = XLSX.utils.aoa_to_sheet(summaryData);
+                XLSX.utils.book_append_sheet(workbook, summaryWS, 'Resumen');
+
+                // Hoja 2: Detalle por Partidas
+                const detailData = [
+                    ['Código', 'Descripción', 'Presupuesto Asignado', 'Monto Ejecutado', 'Saldo Disponible', '% Ejecución']
+                ];
+
+                Object.keys(budgetData.categories).forEach(catKey => {
+                    const category = budgetData.categories[catKey];
+                    
+                    // Fila de categoría
+                    detailData.push([category.name, '', '', '', '', '']);
+                    
+                    // Filas de items
+                    Object.keys(category.items).forEach(itemKey => {
+                        const item = category.items[itemKey];
+                        const itemExpenses = expenses[itemKey] || [];
+                        const totalSpent = itemExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+                        const remaining = item.budget - totalSpent;
+                        const percentage = item.budget > 0 ? (totalSpent / item.budget) * 100 : 0;
+
+                        detailData.push([
+                            itemKey,
+                            item.name,
+                            formatCurrencyForExport(item.budget),
+                            formatCurrencyForExport(totalSpent),
+                            formatCurrencyForExport(remaining),
+                            `${percentage.toFixed(1)}%`
+                        ]);
+                    });
+                });
+
+                const detailWS = XLSX.utils.aoa_to_sheet(detailData);
+                XLSX.utils.book_append_sheet(workbook, detailWS, 'Detalle por Partidas');
+
+                // Hoja 3: Registro de Gastos
+                const expensesData = [
+                    ['Código Partida', 'Descripción Partida', 'Concepto del Gasto', 'Monto', 'Fecha']
+                ];
+
+                Object.keys(expenses).forEach(itemKey => {
+                    const category = findCategoryByItem(itemKey);
+                    const item = category.items[itemKey];
+                    const itemExpenses = expenses[itemKey] || [];
+
+                    itemExpenses.forEach(expense => {
+                        expensesData.push([
+                            itemKey,
+                            item.name,
+                            expense.description,
+                            formatCurrencyForExport(expense.amount),
+                            new Date(expense.date).toLocaleDateString('es-ES')
+                        ]);
+                    });
+                });
+
+                const expensesWS = XLSX.utils.aoa_to_sheet(expensesData);
+                XLSX.utils.book_append_sheet(workbook, expensesWS, 'Registro de Gastos');
+
+                // Descargar archivo
+                const fileName = `Presupuesto_Materno_Infantil_CRD_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(workbook, fileName);
+                
+                showNotification('Archivo Excel exportado exitosamente', 'success');
+            } catch (error) {
+                console.error('Error al exportar Excel:', error);
+                showNotification('Error al exportar archivo Excel', 'error');
+            }
+        }
+
+        function exportToPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Configuración
+                const primaryColor = [220, 20, 60]; // Cruz Roja color
+                const textColor = [51, 65, 85]; // Neutral 700
+                
+                // Header
+                doc.setFillColor(...primaryColor);
+                doc.rect(0, 0, 210, 40, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(18);
+                doc.setFont(undefined, 'bold');
+                doc.text('SISTEMA DE GESTIÓN PRESUPUESTARIA', 20, 15);
+                doc.setFontSize(12);
+                doc.text('Cruz Roja Dominicana', 20, 22);
+                doc.text('Gestión Integrada de la Salud Materno-Infantil', 20, 28);
+                doc.text('Santo Domingo, República Dominicana', 20, 34);
+
+                // Información del proyecto
+                doc.setTextColor(...textColor);
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Administradora: Mayra Caro`, 20, 50);
+                doc.text(`Fecha de exportación: ${new Date().toLocaleDateString('es-ES')}`, 20, 55);
+                doc.text(`Moneda: ${isEURO ? 'EUR' : 'DOP'}`, 20, 60);
+
+                // Resumen financiero
+                doc.setFontSize(14);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(...primaryColor);
+                doc.text('RESUMEN FINANCIERO', 20, 75);
+
+                doc.setFontSize(10);
+                doc.setTextColor(...textColor);
+                doc.setFont(undefined, 'normal');
+                
+                const totalSpent = calculateTotalSpent();
+                const remaining = 36646.91 - totalSpent;
+                const percentage = (totalSpent / 36646.91) * 100;
+
+                doc.text(`Presupuesto Total: ${formatCurrencyForExport(36646.91)}`, 20, 85);
+                doc.text(`Total Ejecutado: ${formatCurrencyForExport(totalSpent)}`, 20, 90);
+                doc.text(`Saldo Disponible: ${formatCurrencyForExport(remaining)}`, 20, 95);
+                doc.text(`Porcentaje Ejecutado: ${percentage.toFixed(1)}%`, 20, 100);
+
+                // Tabla de partidas
+                const tableData = [];
+                Object.keys(budgetData.categories).forEach(catKey => {
+                    const category = budgetData.categories[catKey];
+                    
+                    // Fila de categoría
+                    tableData.push([{
+                        content: category.name,
+                        colSpan: 5,
+                        styles: { 
+                            fillColor: primaryColor, 
+                            textColor: [255, 255, 255], 
+                            fontStyle: 'bold',
+                            fontSize: 9
+                        }
+                    }]);
+                    
+                    // Filas de items
+                    Object.keys(category.items).forEach(itemKey => {
+                        const item = category.items[itemKey];
+                        const itemExpenses = expenses[itemKey] || [];
+                        const itemTotalSpent = itemExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+                        const itemRemaining = item.budget - itemTotalSpent;
+                        const itemPercentage = item.budget > 0 ? (itemTotalSpent / item.budget) * 100 : 0;
+
+                        tableData.push([
+                            itemKey,
+                            item.name,
+                            formatCurrencyForExport(item.budget),
+                            formatCurrencyForExport(itemTotalSpent),
+                            `${itemPercentage.toFixed(1)}%`
+                        ]);
+                    });
+                });
+
+                doc.autoTable({
+                    startY: 110,
+                    head: [['Código', 'Descripción', 'Presupuesto', 'Ejecutado', '% Ejecución']],
+                    body: tableData,
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 3,
+                    },
+                    headStyles: {
+                        fillColor: [51, 65, 85],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    alternateRowStyles: {
+                        fillColor: [248, 250, 252]
+                    },
+                    margin: { left: 20, right: 20 }
+                });
+
+                // Nueva página para gastos detallados si hay gastos
+                const hasExpenses = Object.keys(expenses).length > 0;
+                if (hasExpenses) {
+                    doc.addPage();
+                    
+                    // Header de segunda página
+                    doc.setFillColor(...primaryColor);
+                    doc.rect(0, 0, 210, 25, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(14);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('REGISTRO DETALLADO DE GASTOS', 20, 15);
+
+                    // Tabla de gastos
+                    const expensesTableData = [];
+                    Object.keys(expenses).forEach(itemKey => {
+                        const category = findCategoryByItem(itemKey);
+                        const item = category.items[itemKey];
+                        const itemExpenses = expenses[itemKey] || [];
+
+                        itemExpenses.forEach(expense => {
+                            expensesTableData.push([
+                                itemKey,
+                                item.name,
+                                expense.description,
+                                formatCurrencyForExport(expense.amount),
+                                new Date(expense.date).toLocaleDateString('es-ES')
+                            ]);
+                        });
+                    });
+
+                    doc.autoTable({
+                        startY: 35,
+                        head: [['Código', 'Partida', 'Concepto', 'Monto', 'Fecha']],
+                        body: expensesTableData,
+                        styles: {
+                            fontSize: 8,
+                            cellPadding: 3,
+                        },
+                        headStyles: {
+                            fillColor: [51, 65, 85],
+                            textColor: [255, 255, 255],
+                            fontStyle: 'bold'
+                        },
+                        alternateRowStyles: {
+                            fillColor: [248, 250, 252]
+                        },
+                        margin: { left: 20, right: 20 }
+                    });
+                }
+
+                // Footer en todas las páginas
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    doc.text('Desarrollado por Jesús | Cruz Roja Dominicana', 20, doc.internal.pageSize.height - 10);
+                    doc.text(`Página ${i} de ${pageCount}`, doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 10);
+                }
+
+                // Descargar PDF
+                const fileName = `Presupuesto_Materno_Infantil_CRD_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+                
+                showNotification('Archivo PDF exportado exitosamente', 'success');
+            } catch (error) {
+                console.error('Error al exportar PDF:', error);
+                showNotification('Error al exportar archivo PDF', 'error');
+            }
+        }
+
+        function formatCurrencyForExport(amount) {
+            if (isEURO) {
+                return amount.toLocaleString('es-ES', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                }) + ' €';
+            } else {
+                const dopAmount = amount * EXCHANGE_RATE;
+                return dopAmount.toLocaleString('es-DO', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                }) + ' DOP';
+            }
+        }
+
+        function calculateTotalSpent() {
+            let totalSpent = 0;
+            Object.keys(expenses).forEach(itemKey => {
+                const itemExpenses = expenses[itemKey] || [];
+                totalSpent += itemExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+            });
+            return totalSpent;
+        }
     </script>
 </body>
 </html>
